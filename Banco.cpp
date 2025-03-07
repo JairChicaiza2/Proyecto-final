@@ -7,6 +7,12 @@
 #include <windows.h> // Para manipular el color de la consola
 #include <fstream> // Para manejar archivos
 #include <ctime> // Para manejar la fecha y hora
+#include <iomanip> // Para manejar la precisión de los números
+
+// Declaraciones de funciones
+void gotoxy(int x, int y);
+void dibujarMarco();
+void setColor(int color);
 
 struct Usuario {
     std::string cedula;
@@ -123,7 +129,7 @@ private:
     }
 
     bool esNumeroValido(const std::string& str) {
-        return std::regex_match(str, std::regex("^[0-9.,]+$"));
+        return std::regex_match(str, std::regex("^[0-9]+$"));
     }
 
     bool esTextoValido(const std::string& str) {
@@ -271,24 +277,25 @@ public:
     void mostrarMenu(const std::string& cedula) {
         if (!estaRegistrado(cedula)) {
             setColor(11); // Establecer color celeste claro
-            std::cout << "El usuario no está registrado." << std::endl;
+            std::cout << "El usuario no está registrado." << std::endl;
             setColor(7); // Restaurar color predeterminado
             return;
         }
         int opcion = 1;
         char tecla;
         do {
-            system("cls");
+            dibujarMarco();
             mostrarFechaHora();
-            setColor(11); // Establecer color celeste claro
-            std::cout << "Menú de opciones: " << std::endl;
-            std::cout << (opcion == 1 ? "-> " : "   ") << "1. Préstamos" << std::endl;
-            std::cout << (opcion == 2 ? "-> " : "   ") << "2. Transferencias" << std::endl;
-            std::cout << (opcion == 3 ? "-> " : "   ") << "3. Consultar saldo" << std::endl;
-            std::cout << (opcion == 4 ? "-> " : "   ") << "4. Ver beneficios" << std::endl;
-            std::cout << (opcion == 5 ? "-> " : "   ") << "5. Salir" << std::endl;
-            setColor(7); // Restaurar color predeterminado
-
+            gotoxy(30, 5); std::cout << "+==============+";
+            gotoxy(30, 6); std::cout << "| MENU DE USUARIO |";
+            gotoxy(30, 7); std::cout << "+==============+";
+            
+            gotoxy(25, 9);  std::cout << (opcion == 1 ? "-> " : "   ") << "1. Préstamos";
+            gotoxy(25, 10); std::cout << (opcion == 2 ? "-> " : "   ") << "2. Transferencias";
+            gotoxy(25, 11); std::cout << (opcion == 3 ? "-> " : "   ") << "3. Consultar saldo";
+            gotoxy(25, 12); std::cout << (opcion == 4 ? "-> " : "   ") << "4. Ver beneficios";
+            gotoxy(25, 13); std::cout << (opcion == 5 ? "-> " : "   ") << "5. Salir";
+            
             tecla = _getch();
             if (tecla == 72 && opcion > 1) opcion--; // Flecha arriba
             if (tecla == 80 && opcion < 5) opcion++; // Flecha abajo
@@ -312,7 +319,7 @@ public:
                         break;
                     case 5:
                         setColor(11); // Establecer color celeste claro
-                        std::cout << "Saliendo del menú de usuario..." << std::endl;
+                        std::cout << "Saliendo del menú de usuario..." << std::endl;
                         setColor(7); // Restaurar color predeterminado
                         break;
                 }
@@ -334,22 +341,15 @@ public:
         int edad;
 
         do {
-            system("cls");
-            mostrarFechaHora();
-            setColor(11); // Establecer color celeste claro
-            std::cout << ".........................................." << std::endl;
-            std::cout << ".                                        ." << std::endl;
-            std::cout << ".            Registro Bancario           ." << std::endl;
-            std::cout << ".                                        ." << std::endl;
-            std::cout << ". " << (opcion == 1 ? "-> " : "   ") << "1. Registrar usuario              ." << std::endl;
-            std::cout << ". " << (opcion == 2 ? "-> " : "   ") << "2. Acceder al menu de usuario     ." << std::endl;
-            std::cout << ". " << (opcion == 3 ? "-> " : "   ") << "3. Salir del programa XD            ." << std::endl;
-            std::cout << ".                                        ." << std::endl;
-            std::cout << ".........................................." << std::endl;
-            setColor(10); // Establecer color verde claro
-            std::cout << "Creado por Christian Bautista y Jair Chicaiza XD para " << nombreBanco << std::endl;
-            setColor(7); // Restaurar color predeterminado
-
+            dibujarMarco();
+            gotoxy(30, 5); std::cout << "+==============+";
+            gotoxy(30, 6); std::cout << "| MENU PRINCIPAL |";
+            gotoxy(30, 7); std::cout << "+==============+";
+            
+            gotoxy(25, 9);  std::cout << (opcion == 1 ? "-> " : "   ") << "1. Registrar usuario";
+            gotoxy(25, 10); std::cout << (opcion == 2 ? "-> " : "   ") << "2. Acceder al menú de usuario";
+            gotoxy(25, 11); std::cout << (opcion == 3 ? "-> " : "   ") << "3. Salir del programa";
+            
             tecla = _getch();
             if (tecla == 72 && opcion > 1) opcion--; // Flecha arriba
             if (tecla == 80 && opcion < 3) opcion++; // Flecha abajo
@@ -359,11 +359,11 @@ public:
                 switch (opcion) {
                     case 1:
                         setColor(11); // Establecer color celeste claro
-                        std::cout << "Ingrese su numero de cédula completa: ";
+                        std::cout << "Ingrese su número de cédula completa: ";
                         setColor(7); // Restaurar color predeterminado
                         std::cin >> cedula;
                         setColor(11); // Establecer color celeste claro
-                        std::cout << "Ingrese su numero de teléfono: ";
+                        std::cout << "Ingrese su número de teléfono: ";
                         setColor(7); // Restaurar color predeterminado
                         std::cin >> telefono;
                         setColor(11); // Establecer color celeste claro
@@ -415,6 +415,76 @@ public:
         } while (tecla != 13 || opcion != 3);
     }
 };
+
+// Constantes para el tamaño de la pantalla
+const int ANCHO = 80;
+const int ALTO = 25;
+
+// Función para posicionar el cursor
+void gotoxy(int x, int y) {
+    HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD dwPos;
+    dwPos.X = x;
+    dwPos.Y = y;
+    SetConsoleCursorPosition(hcon, dwPos);
+}
+
+void setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+// Función para dibujar el marco
+void dibujarMarco() {
+    system("cls");
+    
+    // Líneas horizontales (usando '=' para mejorar la estética)
+    for(int i = 0; i < ANCHO; i++) {
+        gotoxy(i, 0); std::cout << "=";
+        gotoxy(i, 3); std::cout << "=";
+        gotoxy(i, ALTO-1); std::cout << "=";
+    }
+    
+    // Líneas verticales (usando '|' para mejorar la estética)
+    for(int i = 1; i < ALTO-1; i++) {
+        gotoxy(0, i); std::cout << "|";
+        gotoxy(ANCHO-1, i); 
+        setColor(13); // Establecer color morado eléctrico
+        std::cout << "|";
+        setColor(7); // Restaurar color predeterminado
+    }
+    
+    // Esquinas (usando '+' para mejorar la estética)
+    gotoxy(0, 0); std::cout << "+";
+    gotoxy(0, ALTO-1); std::cout << "+";
+    gotoxy(ANCHO-1, 0); 
+    setColor(13); // Establecer color morado eléctrico
+    std::cout << "+";
+    setColor(7); // Restaurar color predeterminado
+    gotoxy(ANCHO-1, ALTO-1); 
+    setColor(13); // Establecer color morado eléctrico
+    std::cout << "+";
+    setColor(7); // Restaurar color predeterminado
+    
+    // Header
+    gotoxy(2, 1); std::cout << "+==== Banco Hamza ====+";
+    gotoxy(2, 2); std::cout << "| Sistema v1.0        |";
+    
+    // Footer
+    gotoxy(2, ALTO-2); std::cout << "Christian Bautista y Jair Chicaiza";
+    gotoxy(ANCHO-30, ALTO-2); std::cout << "Creado para Banco Hamza";
+    
+    // Fecha y hora
+    time_t now = time(0);
+    tm* time = localtime(&now);
+    gotoxy(ANCHO-22, 1);
+    std::cout << std::setw(2) << std::setfill('0') << time->tm_mday << "/"
+              << std::setw(2) << std::setfill('0') << (time->tm_mon + 1) << "/"
+              << (1900 + time->tm_year);
+    gotoxy(ANCHO-22, 2);
+    std::cout << std::setw(2) << std::setfill('0') << time->tm_hour << ":"
+              << std::setw(2) << std::setfill('0') << time->tm_min << ":"
+              << std::setw(2) << std::setfill('0') << time->tm_sec;
+}
 
 int main() {
     Banco banco;
